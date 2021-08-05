@@ -30,7 +30,7 @@ class SpeechHandler:
             with self.MIC as source:self.RECORD.adjust_for_ambient_noise(source)
             print("Set minimum energy threshold to {}".format(self.RECORD.energy_threshold))
             print("Say a command!")
-            with self.MIC as source: audio = self.RECORD.listen(source, timeout=2, phrase_time_limit=8,)
+            with self.MIC as source: audio = self.RECORD.listen(source, timeout=2, phrase_time_limit=8)
             try:
                 # recognize speech using Google Speech Recognition
                 ret = self.RECORD.recognize_google(audio, key=self.API_KEY, language="en-US").lower()
