@@ -1,36 +1,32 @@
-import speech_recognition as sr
+# -*- coding: utf-8 -*-
+'''
+Author: David J. Morfe
+Application Name: Speech Handler for C.H.R.I.S.
+Functionality Purpose: Intake and process speech to recognize requested action
+'''
+
+##import speech_recognition as sr
 import time
 import re
 
-r = sr.Recognizer() #Audio Record Variable
-m = sr.Microphone() #Microphone Variable
 
-#نوم نوم نوم - Jump
-#
-# يرمي يرمي - Throw
+##RECORD = sr.Recognizer() #Audio Record Variable
+##MIC = sr.Microphone() #Microphone Variable
 
-class FFVT: #Food Fight Voice Trigger
-    '''Food Fight Voice Trigger: Connector software to interface with the Unity 2D video game *Food Fight!*'''
+
+class SpeechHandler:
+    '''This class instantiates the connector software to interface with other modules'''
     def __init__(self):
         self.lang = ()
         self.said = ""
         self.epat = ["(jump|trump|lump|hump|clump|dump|stump)", #English
                      "(duck|duct|truck|luck|yuck|stuck|muck|abduct)",
                      "(throw|row|mow|low|go|bow|boe|thorough|trough|bro)"]
-        self.apat = ["()", "()", "()"] #Arabic
-        self.fpat = ["()", "()", "()"] #French
-        self.spat = ["()", "()", "()"] #Spanish
 
     #Psuedo Switch Statement
     def switch(self, c):
         if c == 0: #English
             return ("en-US", self.epat)
-        elif c == 1: #Arabic
-            return ("ar-EG", self.apat)
-        elif c == 2: #French
-            return ("fr-FR", self.fpat)
-        elif c == 3: #Spanish
-            return ("es-DO", self.spat)
 
     #Return the spoken language
     def lang_handler(self):
@@ -46,14 +42,6 @@ class FFVT: #Food Fight Voice Trigger
                     langCheck = r.recognize_google(audio, language="en-US")
                     if re.search(r"(english|ingles)", langCheck.lower()):
                         langC = 0
-                    elif re.search(r"(arabic|arab|aramaic|arby)", langCheck.lower()):
-                        langC = 1
-                    elif re.search(r"(french|france|frances|fresh)", langCheck.lower()):
-                        langC = 2
-                    elif re.search(r"(spanish|espanol)", langCheck.lower()):
-                        langC = 3
-                    else:
-                        pass
                 except sr.UnknownValueError:
                     pass
                 if langC != "":
@@ -90,4 +78,4 @@ class FFVT: #Food Fight Voice Trigger
         except KeyboardInterrupt:
             pass
 
-FFVT().cmd_handler()
+##SpeechHandler().cmd_handler()
