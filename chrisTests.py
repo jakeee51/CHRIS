@@ -5,7 +5,7 @@ import CHRIS
 # Initiate SpeechHandler object
 SH = CHRIS.SpeechHandler()
 # Execute cmd_listen when you want take action
-# Timeout after 2 seconds & listens for 8 seconds total
+# Timeout after 4 seconds & listens for 8 seconds total
 value = SH.cmd_listen()
 
 if value == "java":

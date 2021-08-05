@@ -15,14 +15,16 @@ os.chdir(CWD)
 class SpeechHandler:
     '''This class instantiates the connector software to interface with other modules'''
 
-    RECORD = sr.Recognizer() #Audio Record Variable
-    MIC = sr.Microphone() #Microphone Variable
+    RECORD = sr.Recognizer() # Audio Record Variable
+    MIC = sr.Microphone() # Microphone Variable
     API_KEY = api_key()
 
     def __init__(self):
-        self.pat_lib = ["(java|ava|lava|guava|kaaba)"]
+        self.pat_lib = {"java":"(java|ava|lava|guava|kaaba)",
+                        "v10": "(pull|v10|v|vee|ten)",
+                        "get": "(dot|go to|search|google|com|org|net|\.)"}
 
-    #Return the intended command
+    # Return the intended command
     def cmd_listen(self, file: str=None):
         ret = None
         try:
@@ -35,9 +37,9 @@ class SpeechHandler:
                 # recognize speech using Google Speech Recognition
                 ret = self.RECORD.recognize_google(audio, key=self.API_KEY, language="en-US").lower()
                 print(f"You said {ret}")
-                if re.search(fr"{self.pat_lib[0]}", ret):
+                if re.search(fr"{self.pat_lib['java']}", ret):
                     ret = "java"
-                elif re.search(fr"{self.pat_lib[0]}", ret):
+                elif re.search(fr"{self.pat_lib['v10']}", ret):
                     ret = "pull"
                 elif re.search(fr"{self.pat_lib[0]}", ret):
                     ret = "get"

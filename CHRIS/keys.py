@@ -13,6 +13,6 @@ except FileNotFoundError:
 def api_key():
    try:
       with open("api_key.txt") as f:
-         return f.read()
+         return f.read() # Return API key string here
    except FileNotFoundError:
       pass
