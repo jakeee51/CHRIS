@@ -5,77 +5,49 @@ Application Name: Speech Handler for C.H.R.I.S.
 Functionality Purpose: Intake and process speech to recognize requested action
 '''
 
-##import speech_recognition as sr
-import time
-import re
 
-
-##RECORD = sr.Recognizer() #Audio Record Variable
-##MIC = sr.Microphone() #Microphone Variable
+import speech_recognition as sr
+import time, re, os
+from .keys import CWD, api_key
+os.chdir(CWD)
 
 
 class SpeechHandler:
     '''This class instantiates the connector software to interface with other modules'''
+
+    RECORD = sr.Recognizer() #Audio Record Variable
+    MIC = sr.Microphone() #Microphone Variable
+    API_KEY = api_key()
+
     def __init__(self):
-        self.lang = ()
-        self.said = ""
-        self.epat = ["(jump|trump|lump|hump|clump|dump|stump)", #English
-                     "(duck|duct|truck|luck|yuck|stuck|muck|abduct)",
-                     "(throw|row|mow|low|go|bow|boe|thorough|trough|bro)"]
-
-    #Psuedo Switch Statement
-    def switch(self, c):
-        if c == 0: #English
-            return ("en-US", self.epat)
-
-    #Return the spoken language
-    def lang_handler(self):
-        langC = ""
-        try:
-            #print("A moment of silence, please...")
-            with m as source: r.adjust_for_ambient_noise(source)
-            #print("Set minimum energy threshold to {}".format(r.energy_threshold))
-            while True:
-                print("Speak the name of a language:  ")
-                with m as source: audio = r.listen(source)
-                try:
-                    langCheck = r.recognize_google(audio, language="en-US")
-                    if re.search(r"(english|ingles)", langCheck.lower()):
-                        langC = 0
-                except sr.UnknownValueError:
-                    pass
-                if langC != "":
-                    return langC
-        except KeyboardInterrupt:
-            pass
+        self.pat_lib = ["(java|ava|lava|guava|kaaba)"]
 
     #Return the intended command
-    def cmd_handler(self, file="log.txt"):
-        self.lang = self.switch(self.lang_handler()) #Language determinants of type tuple: (str, list)
-        print("Language: ", self.lang[0])
+    def cmd_listen(self, file: str=None):
+        ret = None
         try:
-            #print("A moment of silence, please...")
-            with m as source: r.adjust_for_ambient_noise(source)
-            #print("Set minimum energy threshold to {}".format(r.energy_threshold))
-            while True:
-                with open(file, "a") as f:
-                    print("Say a command!")
-                    with m as source: audio = r.listen(source)
-                    try:
-                        # recognize speech using Google Speech Recognition
-                        value = r.recognize_google(audio, language=self.lang[0])
-                        print(f"You said {value}")
-                        if re.search(fr"{self.lang[1][0]}", value.lower()):
-                            f.write("JUMPED" + '\n')
-                        elif re.search(fr"{self.lang[1][1]}", value.lower()):
-                            f.write("DUCKED" + '\n')
-                        elif re.search(fr"{self.lang[1][2]}", value.lower()):
-                            f.write("THROWN" + '\n')
-                        else:
-                            pass
-                    except sr.UnknownValueError:
-                        pass
+            print("A moment of silence, please...")
+            with self.MIC as source:self.RECORD.adjust_for_ambient_noise(source)
+            print("Set minimum energy threshold to {}".format(self.RECORD.energy_threshold))
+            print("Say a command!")
+            with self.MIC as source: audio = self.RECORD.listen(source, timeout=2, phrase_time_limit=8,)
+            try:
+                # recognize speech using Google Speech Recognition
+                ret = self.RECORD.recognize_google(audio, key=self.API_KEY, language="en-US").lower()
+                print(f"You said {ret}")
+                if re.search(fr"{self.pat_lib[0]}", ret):
+                    ret = "java"
+                elif re.search(fr"{self.pat_lib[0]}", ret):
+                    ret = "pull"
+                elif re.search(fr"{self.pat_lib[0]}", ret):
+                    ret = "get"
+            except sr.UnknownValueError:
+                print("UnknownValueError: Speech is unintelligible")
+            except sr.WaitTimeoutError:
+                print("WaitTimeoutError: Took to long to speak")
         except KeyboardInterrupt:
             pass
-
-##SpeechHandler().cmd_handler()
+        if file:
+            with open(re.sub(r"\..+", '', file) + ".txt", 'a') as f:
+                f.write(ret)
+        return ret
