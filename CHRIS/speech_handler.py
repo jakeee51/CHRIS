@@ -49,6 +49,7 @@ class SpeechHandler:
         try:
             captured_speech = recognizer.recognize_google(
                 audio, key=self.API_KEY, language="en-US").lower()
+            print("raw:", captured_speech)
             self.ret = self.get_cmd(captured_speech)
             if self.file:
                 with open(re.sub(r"\..+$", '', self.file) + ".txt", 'a') as f:
@@ -86,7 +87,8 @@ class SpeechHandler:
             self.file = file
             with self.MIC as source:self.RECORD.adjust_for_ambient_noise(source)
             print("Set minimum energy threshold to {}".format(self.RECORD.energy_threshold))
-            self.stop_listener = self.RECORD.listen_in_background(self.MIC, self.callback)
+            self.stop_listener = self.RECORD.listen_in_background(
+                self.MIC, self.callback, phrase_time_limit=2)
         except KeyboardInterrupt:
             pass
         return self.stop_listener
