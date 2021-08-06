@@ -9,6 +9,9 @@ Functionality Purpose: Intake and process speech to recognize requested action
 import speech_recognition as sr
 import time, re, os
 from .keys import CWD, api_key
+
+
+API_KEY = api_key()
 os.chdir(CWD)
 
 
@@ -17,8 +20,8 @@ class SpeechHandler:
 
     RECORD = sr.Recognizer() # Audio Record Variable
     MIC = sr.Microphone() # Microphone Variable
-    API_KEY = api_key()
-
+    API_KEY = API_KEY
+    
     def __init__(self, wait: int=8):
         self.ret = self.file = None; self.wait = wait
         self.stop_listener = None
@@ -46,11 +49,10 @@ class SpeechHandler:
 
     # Call back function for background listener
     def callback(self, recognizer, audio):
-        print(self.API_KEY)
         try:
             captured_speech = recognizer.recognize_google(
                 audio, key=self.API_KEY, language="en-US").lower()
-            print("raw:", captured_speech)
+            print("raw:", captured_speech, self.API_KEY)
             self.ret = self.get_cmd(captured_speech)
             if self.file:
                 with open(re.sub(r"\..+$", '', self.file) + ".txt", 'a') as f:
