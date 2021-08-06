@@ -19,3 +19,5 @@ def openPage(pageUrl):
 def installJava(versionNum):
     jdk.install(str(versionNum))
     print("installed Jave " + str(versionNum)+ " into $HOME/.jdk")
+
+jdk.uninstall(11)
