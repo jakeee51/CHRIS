@@ -22,7 +22,8 @@ class SpeechHandler:
     def __init__(self, wait: int=8):
         self.ret = self.file = None; self.wait = wait
         self.stop_listener = None
-        self.pat_lib = {"java":"(java|ava|lava|guava|kaaba)",
+        self.pat_lib = {"triger": "(hey chris|hay kris|ay cris|chris|kris|oi chris)",
+                        "java": "(java|ava|lava|guava|kaaba)",
                         "v10": "(pull|v10|v|vee|ten)",
                         "get": "(dot|go to|search|google|com|org|net|\.)"}
 
@@ -44,7 +45,7 @@ class SpeechHandler:
             print("UnknownValueError: Speech is unintelligible")
         except sr.RequestError:
             print("RequestError: Could not requests results from API")
-    
+
     # Listen for specified length of time
     def cmd_listen(self, file: str=None) -> str:
         try:
@@ -52,7 +53,7 @@ class SpeechHandler:
             with self.MIC as source:self.RECORD.adjust_for_ambient_noise(source)
             print("Set minimum energy threshold to {}".format(self.RECORD.energy_threshold))
             print("Say a command!")
-            
+
             with self.MIC as source:
                 audio = self.RECORD.listen(source, timeout=2, phrase_time_limit=self.wait)
             try:
