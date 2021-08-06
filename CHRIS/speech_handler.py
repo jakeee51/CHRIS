@@ -28,7 +28,8 @@ class SpeechHandler:
             "java": "(java|ava|lava|guava|kaaba)",
             "v10": "(v10|ten)",
             "v4": "(v4|four)",
-            "ppm": "(ppm|hours|timesheet|worked)"}
+            "ppm": "(ppm|hours|timesheet|worked)",
+            "help": "(help|need|who|what|where|why|how)"}
 
     # Return value from callback
     def get_value(self) -> str:
