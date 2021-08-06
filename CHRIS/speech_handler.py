@@ -22,25 +22,37 @@ class SpeechHandler:
     def __init__(self, wait: int=8):
         self.ret = self.file = None; self.wait = wait
         self.stop_listener = None
-        self.pat_lib = {"triger": "(hey chris|hay kris|ay cris|chris|kris|oi chris)",
-                        "java": "(java|ava|lava|guava|kaaba)",
-                        "v10": "(pull|v10|v|vee|ten)",
-                        "get": "(dot|go to|search|google|com|org|net|\.)"}
+        self.expr_library = {
+            "trigger": "(hey chris|hay kris|ay cris|chris|kris|oi chris)",
+            "exit": "(exit|stop|quit)",
+            "java": "(java|ava|lava|guava|kaaba)",
+            "v10": "(v10|ten)",
+            "v4": "(v4|four)",
+            "ppm": "(ppm|hours|timesheet|worked)"}
 
     # Return value from callback
     def get_value(self) -> str:
-        return self.ret
+        if self.ret != None:
+            ret = self.ret
+            self.ret = None
+            return ret
+        return None
+
+    def get_cmd(self, captured_speech):
+        for key,expr in self.expr_library.items():
+            if re.search(fr"{expr}", captured_speech):
+                return key
 
     # Call back function for background listener
     def callback(self, recognizer, audio):
+        print(self.API_KEY)
         try:
-            value = recognizer.recognize_google(
+            captured_speech = recognizer.recognize_google(
                 audio, key=self.API_KEY, language="en-US").lower()
-            self.ret = value
+            self.ret = self.get_cmd(captured_speech)
             if self.file:
                 with open(re.sub(r"\..+$", '', self.file) + ".txt", 'a') as f:
                     f.write(self.ret + '\n')
-            print("You said " + value)  # received audio data, now need to recognize it
         except sr.UnknownValueError:
             print("UnknownValueError: Speech is unintelligible")
         except sr.RequestError:
@@ -49,23 +61,14 @@ class SpeechHandler:
     # Listen for specified length of time
     def cmd_listen(self, file: str=None) -> str:
         try:
-            print("A moment of silence, please...")
             with self.MIC as source:self.RECORD.adjust_for_ambient_noise(source)
             print("Set minimum energy threshold to {}".format(self.RECORD.energy_threshold))
-            print("Say a command!")
-
             with self.MIC as source:
                 audio = self.RECORD.listen(source, timeout=2, phrase_time_limit=self.wait)
             try:
                 # recognize speech using Google Speech Recognition API
-                self.ret = self.RECORD.recognize_google(audio, key=self.API_KEY, language="en-US").lower()
-                print(f"You said {self.ret}")
-                if re.search(fr"{self.pat_lib['java']}", self.ret):
-                    self.ret = "java"
-                elif re.search(fr"{self.pat_lib['v10']}", self.ret):
-                    self.ret = "pull"
-                elif re.search(fr"{self.pat_lib['get']}", self.ret):
-                    self.ret = "get"
+                captured_speech = self.RECORD.recognize_google(audio, key=self.API_KEY, language="en-US").lower()
+                self.ret = self.get_cmd(captured_speech)
             except sr.UnknownValueError:
                 print("UnknownValueError: Speech is unintelligible")
             except sr.WaitTimeoutError:
@@ -78,16 +81,12 @@ class SpeechHandler:
         return self.ret
 
     # Listen in background for specified length of time
-    def cmd_listen_background(self, file: str=None) -> str:
+    def cmd_listen_background(self, file: str=None):
         try:
             self.file = file
-            print("A moment of silence, please...")
             with self.MIC as source:self.RECORD.adjust_for_ambient_noise(source)
             print("Set minimum energy threshold to {}".format(self.RECORD.energy_threshold))
-            print("Say a command!")
             self.stop_listener = self.RECORD.listen_in_background(self.MIC, self.callback)
-##            for i in range(self.wait): time.sleep(1)
-##            self.stop_listener(wait_for_stop=False)
         except KeyboardInterrupt:
             pass
         return self.stop_listener
