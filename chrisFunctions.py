@@ -15,7 +15,7 @@ def openPage(pageUrl):
 
 def installJava(versionNum):
     jdk.install(str(versionNum))
-    print("installed Jave " + str(versionNum)+ " into $HOME/.jdk")
+    print("installed Java " + str(versionNum)+ " into $HOME/.jdk")
 
 def connect_cmds(SH):
     value = SH.cmd_listen();
