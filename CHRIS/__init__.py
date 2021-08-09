@@ -3,7 +3,7 @@
 Author: David J. Morfe
 Application Name: C.H.R.I.S.
 Functionality Purpose: Instill data quality upon address data
-Version: 0.0.7 (Beta)
+Version: 0.0.8 (Beta)
 '''
 
 name = "CHRIS"

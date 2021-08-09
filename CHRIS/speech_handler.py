@@ -21,7 +21,7 @@ class SpeechHandler:
     RECORD = sr.Recognizer() # Audio Record Variable
     MIC = sr.Microphone() # Microphone Variable
     API_KEY = API_KEY
-    
+
     def __init__(self, wait: int=8):
         self.ret = self.file = None; self.wait = wait
         self.stop_listener = None
@@ -32,7 +32,8 @@ class SpeechHandler:
             "v10": "(v10|ten)",
             "v4": "(v4|four)",
             "ppm": "(ppm|hours|timesheet|worked)",
-            "help": "(help|need|who|what|where|why|how)"}
+            "help": "(help|need|who|what|where|why|how)",
+            "secure": "(secure|permission|permissions|group|groups)" }
 
     # Return value from callback
     def get_value(self) -> str:
@@ -52,7 +53,7 @@ class SpeechHandler:
         try:
             captured_speech = recognizer.recognize_google(
                 audio, key=self.API_KEY, language="en-US").lower()
-            print("raw:", captured_speech, self.API_KEY)
+            print("raw:", captured_speech)
             self.ret = self.get_cmd(captured_speech)
             if self.file:
                 with open(re.sub(r"\..+$", '', self.file) + ".txt", 'a') as f:
@@ -67,9 +68,9 @@ class SpeechHandler:
         try:
             with self.MIC as source:self.RECORD.adjust_for_ambient_noise(source)
             print("Set minimum energy threshold to {}".format(self.RECORD.energy_threshold))
-            with self.MIC as source:
-                audio = self.RECORD.listen(source, timeout=2, phrase_time_limit=self.wait)
             try:
+                with self.MIC as source:
+                    audio = self.RECORD.listen(source, timeout=2, phrase_time_limit=self.wait)
                 # recognize speech using Google Speech Recognition API
                 captured_speech = self.RECORD.recognize_google(audio, key=self.API_KEY, language="en-US").lower()
                 self.ret = self.get_cmd(captured_speech)

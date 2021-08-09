@@ -9,9 +9,6 @@ import jdk
 def cloneRepo(githubRepoUrl,repoName):
     git.Repo.clone_from(githubRepoUrl,repoName)
 #https://github.optum.com/pes/NDBProviderSearchV10-war.git
-def pullRepo(repoName,branchName):
-    g = git.Git(repoName)
-    g.pull('origin',branchName)
 
 def openPage(pageUrl):
     webbrowser.open(pageUrl)
@@ -25,9 +22,18 @@ def connect_cmds(SH):
     if value == "java":
         print("INSTALLING JAVA")
         try:
-            cf.installJava(11)
+            installJava(11)
         except:
             print("error")
     elif value == "ppm":
         print("NAVIGATING TO PPM")
-        cf.openPage("https://ppmi.optum.com")
+        openPage("https://ppmi.optum.com")
+    elif value == "secure":
+        print("NAVIGATING TO SECURE")
+        openPage("https://secure.uhc.com")
+    elif value == "v10":
+        print("CLONING THE V10 API")
+        cloneRepo("https://github.optum.com/pes/NDBProviderSearchV10-war.git","V10")
+    elif value == "v4":
+        print("CLONING THE V4 API")
+        cloneRepo("https://github.optum.com/pes/NDBPhysnFaclSearchV4-war.git","V4")
